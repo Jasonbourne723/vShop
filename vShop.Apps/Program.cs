@@ -1,3 +1,4 @@
+using Prometheus;
 using vShop.Apps.Extensions;
 using vShop.Apps.Middlewares;
 
@@ -17,6 +18,7 @@ builder.Services.AddDb(builder.Configuration)
     .AddRedisCache()
     .AddValidations()
     .AddAutoMapper();
+builder.Services.AddMetrics();
 
 var app = builder.Build();
 
@@ -32,6 +34,10 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseHttpMetrics();
+
+app.MapMetrics();
 
 app.MapControllers();
 

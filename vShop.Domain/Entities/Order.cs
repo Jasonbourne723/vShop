@@ -9,13 +9,13 @@ namespace vShop.Domain.Entities
         {
         }
 
-        public Order(string orderNo, long userId, decimal totalAmount, DateTime payTime, List<OrderItem> items)
+        public Order(string orderNo, long userId, decimal totalAmount, DateTime payTime)
         {
             OrderNo = orderNo;
             UserId = userId;
             TotalAmount = totalAmount;
             PayTime = payTime;
-            Items = items;
+            _items = new List<OrderItem>();
         }
         [StringLength(20)]
         public string OrderNo { get; set; }
@@ -26,7 +26,17 @@ namespace vShop.Domain.Entities
 
         public DateTime PayTime { get; set; }
 
-        public List<OrderItem> Items { get; set; }
+        private List<OrderItem> _items;
+
+        public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
+
+        public void AddOrderItem(long productId, int quantity, decimal unitPrice, decimal totalAmount)
+        {
+            if (_items.Exists(x => x.ProductId == productId)) return;
+
+            var orderItem = new OrderItem(productId, quantity, unitPrice, totalAmount);
+            _items.Add(orderItem);
+        }
 
     }
 

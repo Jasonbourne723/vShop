@@ -7,7 +7,7 @@ using vShop.Domain.Repositories;
 
 namespace vShop.Infrastructure.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : Entity<long>, new()
+    public abstract class Repository<T> : IRepository<T> where T : Entity<long>, new()
     {
         private readonly EFContext _context;
         private readonly IDistributedCache _distributedCache;
@@ -39,7 +39,7 @@ namespace vShop.Infrastructure.Repositories
             await DeleteCache<T>(entity.Id);
         }
 
-        public async Task<T?> Get(long id)
+        public virtual async Task<T?> Get(long id)
         {
             var result = await GetCache<T>(id);
             if (result == null)

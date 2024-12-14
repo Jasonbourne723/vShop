@@ -18,15 +18,23 @@ namespace vShop.Apps.Application.Commands.Orders
 
         public async Task<long> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var items = _mapper.Map<List<OrderItem>>(request.Items);
+            // 校验商品信息、价格
+
+            // 判断库存
+
 
             var order = new Order(request.OrderNo,
                                   request.UserId,
                                   request.TotalAmount,
-                                  request.PayTime,
-                                  items);
+                                  request.PayTime);
 
             order = await _orderRepository.Add(order);
+
+            foreach (var item in request.Items)
+            {
+                order.AddOrderItem(item.ProductId, item.Quantity, item.UnitPrice, item.TotalAmount);
+            }
+
             await _orderRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
             return order.Id;
         }
